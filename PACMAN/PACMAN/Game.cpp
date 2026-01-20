@@ -77,19 +77,23 @@ int main()
 
 	const int numCircles = 10;
 	sf::CircleShape circles[numCircles];
+	int circleStartPos = 50;
+
+	//circles[0].setPosition(sf::Vector2f(circleStartPos, 300));
 
 	for (int index = 0; index < numCircles; index++)
 	{
 		circles[index].setFillColor(sf::Color::White);
 		circles[index].setRadius(10);
 		circles[index].setOrigin(sf::Vector2f(10, 10));
-		circles[index].setPosition(sf::Vector2f(40 * index, 200));
 
+		//if(circles[index])	
+		circles[index].setPosition(sf::Vector2f(circleStartPos, 300));
 
 	}
 
 	float xPosition = 300;
-	float yPosition = 300;
+	float yPosition = 700;
 	float speed = 1;
 	bool spacePressed = false;
 	int pacmanframesPerSecond = 10;
@@ -195,7 +199,11 @@ int main()
 		}
 
 
+
 		window.clear();
+
+		window.draw(backgroundSprite);
+
 		for (int index = 0; index < numCircles; index++)
 		{
 
@@ -207,7 +215,7 @@ int main()
 		//window.draw(simpleRectangle);
 
 
-		window.draw(backgroundSprite);
+		
 		window.draw(pacmanSprite);
 
 
