@@ -81,6 +81,7 @@ protected:
 	/// <param name="t_event">key pressed event</param>
 	void processKeyPressed(const std::optional<sf::Event>& t_event);
 
+
 	// Font used for all text
 	sf::Font m_arialFont;
 	// main window

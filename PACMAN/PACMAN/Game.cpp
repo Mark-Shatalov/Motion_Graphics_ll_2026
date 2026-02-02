@@ -27,6 +27,32 @@
 #include "Game.h"
 #include "ScreenSize.h"
 
+void setCirclesPos(const int t_numCircles, sf::CircleShape t_circles[], int t_circleStartPos)
+{
+
+	//circles[0].setPosition(sf::Vector2f(circleStartPos, 300));
+
+	int randomBuff = rand() % t_numCircles;
+
+	for (int index = 0; index < t_numCircles; index++)
+	{
+		t_circles[index].setFillColor(sf::Color::White);
+		t_circles[index].setRadius(10);
+		t_circles[index].setOrigin(sf::Vector2f(10, 10));
+
+		//if(circles[index])	
+		float x = static_cast<float>(t_circleStartPos) * (index + 1);
+		t_circles[index].setPosition(sf::Vector2f(x, 300));
+
+
+		if (randomBuff == index)
+		{
+			t_circles[randomBuff].setFillColor(sf::Color::Yellow);
+			t_circles[randomBuff].setRadius(15);
+			t_circles[randomBuff].setOrigin(sf::Vector2f(15, 15));
+		}
+	}
+}
 
 //recreate the game ..
 //
@@ -38,6 +64,7 @@ int main()
 
 	sf::RenderWindow window(sf::VideoMode({ ScreenSize::s_width, ScreenSize::s_height }, 32), "Sprites", sf::Style::Default);
 
+	srand(time(NULL));
 
 	window.setFramerateLimit(60);
 	sf::RectangleShape simpleRectangle;
@@ -73,24 +100,13 @@ int main()
 
 	simpleRectangle.setPosition(sf::Vector2f(100, 200));
 
-	srand(time(NULL));
 
-	const int numCircles = 10;
+	const int numCircles = 15;
 	sf::CircleShape circles[numCircles];
 	int circleStartPos = 50;
+	setCirclesPos(numCircles, circles, circleStartPos);
 
-	//circles[0].setPosition(sf::Vector2f(circleStartPos, 300));
-
-	for (int index = 0; index < numCircles; index++)
-	{
-		circles[index].setFillColor(sf::Color::White);
-		circles[index].setRadius(10);
-		circles[index].setOrigin(sf::Vector2f(10, 10));
-
-		//if(circles[index])	
-		circles[index].setPosition(sf::Vector2f(circleStartPos, 300));
-
-	}
+	
 
 	float xPosition = 300;
 	float yPosition = 700;
@@ -102,6 +118,7 @@ int main()
 	int pacmanFrameCounter = 0;
 	int pacmanWidth = 32;
 	int pacmanHeight = 32;
+	int eatenCount = 0;
 
 
 	while (window.isOpen())
@@ -168,17 +185,24 @@ int main()
 		}
 
 		xPosition += speed;
-		pacmanSprite.setPosition(sf::Vector2f(xPosition, yPosition));
+		pacmanSprite.setPosition(sf::Vector2f(xPosition, yPosition - 400));
 		simpleRectangle.setPosition(sf::Vector2f(xPosition, yPosition));
+
 
 		for (int index = 0; index < numCircles; index++)
 		{
 			if (pacmanSprite.getGlobalBounds().findIntersection(circles[index].getGlobalBounds()))
 			{
 				circles[index].setPosition(sf::Vector2f(1000, 1000));
-
+				eatenCount++;
 			}
 
+		}
+
+		if (eatenCount >= numCircles)
+		{
+			setCirclesPos(numCircles, circles, circleStartPos);
+			eatenCount = 0;
 		}
 
 		sf::Vector2u windowSize = window.getSize();
@@ -227,3 +251,5 @@ int main()
 
 	return 0;
 }
+
+
