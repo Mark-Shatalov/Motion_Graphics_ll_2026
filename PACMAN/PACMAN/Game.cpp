@@ -73,6 +73,7 @@ int main()
 
 	sf::Texture pacman3tex;
 	sf::Texture backgroundTex;
+	sf::Texture enemyTex;
 	if (!pacman3tex.loadFromFile("ASSETS//IMAGES//pacman3.png"))
 	{
 		// error...
@@ -83,9 +84,14 @@ int main()
 		// error...
 		std::cout << "error witg loading pacmanBackground\n";
 	}
-
+	if (!enemyTex.loadFromFile("ASSETS//IMAGES//enemy.png"))
+	{
+		// error...
+		std::cout << "error witg loading pacmanBackground\n";
+	}
 	sf::Sprite backgroundSprite(backgroundTex);
 	sf::Sprite pacmanSprite(pacman3tex);
+	sf::Sprite enemySprite(enemyTex);
 
 	pacmanSprite.setTextureRect(sf::IntRect({ 0,0 }, { 32, 32 }));
 	pacmanSprite.setOrigin(sf::Vector2f(0.5, 0.5));
@@ -99,6 +105,10 @@ int main()
 	simpleRectangle.setFillColor(sf::Color::Red);
 
 	simpleRectangle.setPosition(sf::Vector2f(100, 200));
+
+	sf::Vector2f enemyRow = { 0,64 };
+	enemySprite.setTextureRect(sf::IntRect({ 0,64 }, { 15,15 })); //457
+	enemySprite.setScale(sf::Vector2f(3, 3));
 
 
 	const int numCircles = 15;
@@ -119,6 +129,17 @@ int main()
 	int pacmanWidth = 32;
 	int pacmanHeight = 32;
 	int eatenCount = 0;
+
+	float enemyXPosition = 500;
+	float enemyYPosition = 700;
+
+	float enemySpeed = 1.2f;
+	int enemyFramesPerSecond = 5;
+	int enemyNumFramesinAnim = 2;
+	int enemyFrame = 0;
+	int enemyFrameCounter = 0;
+	int enemyWidth = 15;
+	int enemyHeight = 15;
 
 
 	while (window.isOpen())
@@ -155,6 +176,23 @@ int main()
 			pacmanFrameCounter++;
 		}
 
+		if (enemyFrameCounter >= 60 / enemyFramesPerSecond)
+		{
+			if (enemyFrame < enemyNumFramesinAnim - 1)
+			{
+				enemyFrame++;
+			}
+			else
+			{
+				enemyFrame = 0;
+			}
+			enemyFrameCounter = 0;
+		}
+		else
+		{
+			enemyFrameCounter++;
+		}
+
 		// Calculate the texture rectangle for the current frame
 		int left = pacmanFrame * pacmanWidth;
 		int top = 0; // Assuming all frames are in a single row
@@ -172,6 +210,15 @@ int main()
 
 		}
 
+		/*if (enemySpeed < 0)
+		{
+			enemySprite.setScale(sf::Vector2f(3, 3));
+		}
+		else
+		{
+			enemySprite.setScale(sf::Vector2f(-3, 3));
+		}*/
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Space))
 		{
 			if (spacePressed == false)
@@ -184,9 +231,45 @@ int main()
 			spacePressed = false;
 		}
 
+
+	
+
+		int enemyLeft = enemyRow.x + (enemyFrame * enemyWidth);
+		int enemyTop = enemyRow.y;
+		enemySprite.setTextureRect(sf::IntRect({ enemyLeft,enemyTop }, { enemyWidth, enemyHeight }));
+		enemySprite.setOrigin(sf::Vector2f(7.5, 7.5));
+
+
+
 		xPosition += speed;
+		
 		pacmanSprite.setPosition(sf::Vector2f(xPosition, yPosition - 400));
-		simpleRectangle.setPosition(sf::Vector2f(xPosition, yPosition));
+		enemySprite.setPosition(sf::Vector2f(enemyXPosition, enemyYPosition - 400));
+
+		float dirX = xPosition - enemyXPosition;
+		float dirY = yPosition - enemyYPosition;
+		float distance = std::sqrt((dirX * dirX) + (dirY * dirY));
+
+		if (distance > 0)
+		{
+			dirX /= distance;
+			dirY /= distance;
+
+			if (enemySpeed < 1.2f)
+			{
+				enemyXPosition += dirX * -enemySpeed;
+				if (xPosition > enemyXPosition) enemySprite.setScale({ -3.0f,3.0f }); 
+				else enemySprite.setScale({ 3.0f,3.0f });
+			}
+			else
+			{
+				enemyXPosition += dirX * enemySpeed;
+				if (xPosition > enemyXPosition) enemySprite.setScale({ 3.0f,3.0f }); 
+				else enemySprite.setScale({ -3.0f,3.0f });
+
+			}
+			enemyYPosition += dirY * enemySpeed;
+		}
 
 
 		for (int index = 0; index < numCircles; index++)
@@ -241,7 +324,7 @@ int main()
 
 		
 		window.draw(pacmanSprite);
-
+		window.draw(enemySprite);
 
 		window.display();
 
