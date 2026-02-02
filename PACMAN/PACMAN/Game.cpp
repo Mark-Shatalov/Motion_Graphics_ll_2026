@@ -27,12 +27,12 @@
 #include "Game.h"
 #include "ScreenSize.h"
 
-void setCirclesPos(const int t_numCircles, sf::CircleShape t_circles[], int t_circleStartPos)
+void setCirclesPos(const int t_numCircles, sf::CircleShape t_circles[], int t_circleStartPos, int& t_buffedCircleIndex)
 {
-
-	//circles[0].setPosition(sf::Vector2f(circleStartPos, 300));
-
 	int randomBuff = rand() % t_numCircles;
+
+
+	t_buffedCircleIndex = -1;
 
 	for (int index = 0; index < t_numCircles; index++)
 	{
@@ -40,16 +40,15 @@ void setCirclesPos(const int t_numCircles, sf::CircleShape t_circles[], int t_ci
 		t_circles[index].setRadius(10);
 		t_circles[index].setOrigin(sf::Vector2f(10, 10));
 
-		//if(circles[index])	
 		float x = static_cast<float>(t_circleStartPos) * (index + 1);
 		t_circles[index].setPosition(sf::Vector2f(x, 300));
-
 
 		if (randomBuff == index)
 		{
 			t_circles[randomBuff].setFillColor(sf::Color::Yellow);
 			t_circles[randomBuff].setRadius(15);
 			t_circles[randomBuff].setOrigin(sf::Vector2f(15, 15));
+			t_buffedCircleIndex = index; 
 		}
 	}
 }
@@ -114,9 +113,23 @@ int main()
 	const int numCircles = 15;
 	sf::CircleShape circles[numCircles];
 	int circleStartPos = 50;
-	setCirclesPos(numCircles, circles, circleStartPos);
+	int buffedCircleIndex = -1;
 
-	
+
+	setCirclesPos(numCircles, circles, circleStartPos, buffedCircleIndex);
+
+	// Timers and enemy lifecycle flags
+	//sf::Clock spawnClock;
+	sf::Clock vulnerableClock;
+	//const sf::Time spawnDelay = sf::seconds(2.f);
+	const sf::Time vulnerableDuration = sf::seconds(6.f);
+
+
+	//bool enemyActive = false;        // true when enemy should be updated/drawn
+	//bool awaitingSpawn = false;      // true while waiting the spawnDelay
+	bool enemyVulnerable = false;    // true while cyan / vulnerable
+	//const float originalEnemySpeed = enemySpeed;
+
 
 	float xPosition = 300;
 	float yPosition = 700;
@@ -129,17 +142,18 @@ int main()
 	int pacmanWidth = 32;
 	int pacmanHeight = 32;
 	int eatenCount = 0;
-
 	float enemyXPosition = 500;
 	float enemyYPosition = 700;
 
 	float enemySpeed = 1.2f;
+	const float originalEnemySpeed = enemySpeed;
 	int enemyFramesPerSecond = 5;
 	int enemyNumFramesinAnim = 2;
 	int enemyFrame = 0;
 	int enemyFrameCounter = 0;
 	int enemyWidth = 15;
 	int enemyHeight = 15;
+	bool bigCircleIsEaten = false;
 
 
 	while (window.isOpen())
@@ -278,13 +292,34 @@ int main()
 			{
 				circles[index].setPosition(sf::Vector2f(1000, 1000));
 				eatenCount++;
+
+				if (index == buffedCircleIndex && !bigCircleIsEaten)
+				{
+					bigCircleIsEaten = true;
+					enemyVulnerable = true;
+					vulnerableClock.restart();
+					// slow the enemy when vulnerable; remember originalEnemySpeed already stored
+					enemySpeed = originalEnemySpeed * 0.5f;
+					enemySprite.setColor(sf::Color::Cyan);
+				}
 			}
 
 		}
 
+		// vulnerability timeout
+		if (enemyVulnerable && vulnerableClock.getElapsedTime() >= vulnerableDuration)
+		{
+			enemyVulnerable = false;
+			bigCircleIsEaten = false;
+			enemySprite.setColor(sf::Color::White);
+			enemySpeed = originalEnemySpeed;
+		}
+
+		
+
 		if (eatenCount >= numCircles)
 		{
-			setCirclesPos(numCircles, circles, circleStartPos);
+			setCirclesPos(numCircles, circles, circleStartPos, buffedCircleIndex);
 			eatenCount = 0;
 		}
 
