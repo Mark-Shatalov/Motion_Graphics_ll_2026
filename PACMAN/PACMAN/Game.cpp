@@ -119,16 +119,15 @@ int main()
 	setCirclesPos(numCircles, circles, circleStartPos, buffedCircleIndex);
 
 	// Timers and enemy lifecycle flags
-	//sf::Clock spawnClock;
+	sf::Clock spawnClock;
 	sf::Clock vulnerableClock;
-	//const sf::Time spawnDelay = sf::seconds(2.f);
+	const sf::Time spawnDelay = sf::seconds(2.f);
 	const sf::Time vulnerableDuration = sf::seconds(6.f);
 
 
-	//bool enemyActive = false;        // true when enemy should be updated/drawn
-	//bool awaitingSpawn = false;      // true while waiting the spawnDelay
+	bool enemyActive = false;        // true when enemy should be updated/drawn
+	bool awaitingSpawn = false;      // true while waiting the spawnDelay
 	bool enemyVulnerable = false;    // true while cyan / vulnerable
-	//const float originalEnemySpeed = enemySpeed;
 
 
 	float xPosition = 300;
@@ -321,6 +320,55 @@ int main()
 		{
 			setCirclesPos(numCircles, circles, circleStartPos, buffedCircleIndex);
 			eatenCount = 0;
+		}
+
+
+		if (pacmanSprite.getGlobalBounds().findIntersection(enemySprite.getGlobalBounds()))
+		{
+			if (enemyVulnerable)
+			{
+				awaitingSpawn = true;
+				//enemyActive = false;
+				spawnClock.restart();
+
+				enemyXPosition = -1000;
+				enemyYPosition = -1000;
+
+				enemySprite.setPosition(sf::Vector2f(enemyXPosition, enemyYPosition));
+				enemyVulnerable = false;
+				bigCircleIsEaten = false;
+				enemySprite.setColor(sf::Color::White);
+				enemySpeed = originalEnemySpeed;
+			}
+			else
+			{
+				xPosition = 300.0f;
+				yPosition = 700.0f;
+				speed = 1;
+				setCirclesPos(numCircles, circles, circleStartPos, buffedCircleIndex);
+				eatenCount = 0;
+				//reset enemy
+				awaitingSpawn = false;
+				enemyActive = true;
+				enemyVulnerable = false;
+				bigCircleIsEaten = false;
+				enemyXPosition = 500.0f;
+				enemyYPosition = 700.0f;
+
+				enemySprite.setColor(sf::Color::White);
+				enemySpeed = originalEnemySpeed;
+			}
+
+		}
+
+		if (awaitingSpawn && spawnClock.getElapsedTime() >= spawnDelay)
+		{
+			awaitingSpawn = false;
+			enemyActive = true;
+			enemyXPosition = 500.0f;
+			enemyYPosition = 700.0f;
+			enemySprite.setColor(sf::Color::White);
+			enemySpeed = originalEnemySpeed;
 		}
 
 		sf::Vector2u windowSize = window.getSize();
