@@ -11,6 +11,7 @@ void countElements();
 
 int main()
 {
+	// leap year
 	std::cout << "Leapyear" << std::endl;
 	if (!isLeapYear(1700))
 	{
@@ -34,6 +35,7 @@ int main()
 		std::cout << "no" << std::endl;
 	}
 
+	// palindrome / reversed
 	std::cout << "NumberReversed" << std::endl;
 	if (Reversed(123) == 321)
 	{
@@ -82,7 +84,7 @@ int main()
 		std::cout << "no" << std::endl;
 	}
 
-
+	// prime 
 	std::cout << "Prime Number" << std::endl;
 	if (isAPrimeNumber(3))
 	{
@@ -106,7 +108,7 @@ int main()
 		std::cout << "no" << std::endl;
 	}
 
-
+	// binary to decimal
 	std::cout << "Binary to Decimal" << std::endl;
 	if (convertBinarytoDecimal(110) == 6)
 	{
@@ -123,6 +125,7 @@ int main()
 		std::cout << "no" << std::endl;
 	}
 
+	// char to int
 	std::cout << "\n5 chars to int" << std::endl;
 	std::cout << "Enter a characters: \n";
 	int convertedInt = input5CharsConvertToInt();

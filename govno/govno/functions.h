@@ -3,21 +3,30 @@
 
 bool isLeapYear(int year)
 {
-	if (year % 400 == 0)
+	if (year % 4 == 0)
 	{
-		return true;
+		if (year % 100 == 0)
+		{
+			if (year % 400 == 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;    
+		}
 	}
-	if (year % 100 == 0)
+	else
 	{
 		return false;
 	}
-
-	if (year % 4 == 0)
-	{
-		return true;
-	}
-	return false;
 }
+
 
 
 int Reversed(int testNumber)
@@ -48,32 +57,41 @@ bool isAPalindrome(int testNumber)
 bool isAPrimeNumber(int numbertoTest)
 {
 	if (numbertoTest <= 1)
-	{
 		return false;
-	}
-	if (numbertoTest <= 3)
-	{
+
+	if (numbertoTest == 2)
 		return true;
-	}
 
 	if (numbertoTest % 2 == 0)
-	{
-		return numbertoTest == 2;
-	}
+		return false;
 
-	int limit = static_cast<int>(std::sqrt(numbertoTest));
-
-	for (int i = 3; i <= limit; i += 2)
+	// Check only odd numbers up to sqrt(number)
+	for (long i = 3; i * i <= numbertoTest; i += 2)
 	{
 		if (numbertoTest % i == 0)
-		{
 			return false;
-		}
 	}
 
 	return true;
 }
 
+int convertBinarytoDecimal(int binaryNumber)
+{
+	int decimal = 0;
+	int base = 1;  // Represents 2^0, 2^1, 2^2, ...
+
+	while (binaryNumber > 0)
+	{
+		int lastDigit = binaryNumber % 10;  // Get last binary digit
+
+		decimal += lastDigit * base;        // Add to decimal result
+
+		base *= 2;                          // Move to next power of 2
+		binaryNumber /= 10;                 // Remove last digit
+	}
+	//std::cout << "Decimal: " << decimal << std::endl;
+	return decimal;
+}
 
 int input5CharsConvertToInt()
 {
@@ -93,23 +111,7 @@ int input5CharsConvertToInt()
 	}
 	return returnInt;
 }
-int convertBinarytoDecimal(int binaryNumber)
-{
-	int decimal = 0;
-    int base = 1;  // Represents 2^0, 2^1, 2^2, ...
 
-    while (binaryNumber > 0)
-    {
-        int lastDigit = binaryNumber % 10;  // Get last binary digit
-
-        decimal += lastDigit * base;        // Add to decimal result
-
-        base *= 2;                          // Move to next power of 2
-        binaryNumber /= 10;                 // Remove last digit
-    }
-	//std::cout << "Decimal: " << decimal << std::endl;
-    return decimal;
-}
 
 
 void nestedLoopsTask6()
