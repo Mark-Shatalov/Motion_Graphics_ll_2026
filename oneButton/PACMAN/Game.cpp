@@ -30,6 +30,7 @@
 
     void Game::init()
     {
+        scrollSpeed = 3.7f; // reset scroll speed to default on level reset
         view = window.getDefaultView(); // reset view to default
         playerShape.setSize(sf::Vector2f(20, 20)); 
         playerShape.setPosition(sf::Vector2f(160, 500)); 
@@ -77,6 +78,12 @@
                     level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
                     level[row][col].setFillColor(sf::Color(255, 100, 0)); // create a lava cell 
                 }
+                if (levelData[row][col] == 6)
+                {
+                    level[row][col].setSize(sf::Vector2f(70, 30));
+                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
+                    level[row][col].setFillColor(sf::Color::Yellow); // create a win cell 
+                }
             }
             std::cout << std::endl; // newline for console
         }
@@ -106,6 +113,30 @@
 
             if (timeSinceLastUpdate > timePerFrame)
             {
+                timeSinceLastUpdate = sf::Time::Zero; // reset accumulator
+
+                if (gameWon) // if player has won, freeze game and show win screen only
+                {
+                    window.clear(sf::Color::Black); // clear screen to black
+
+                    sf::RectangleShape winOverlay(sf::Vector2f(800, 600));
+                    winOverlay.setFillColor(sf::Color(0, 180, 0, 200));
+                    window.draw(winOverlay); // draw win overlay
+
+                    sf::Font font;
+                    font.openFromFile("C:/Windows/Fonts/arial.ttf");
+                    sf::Text winText(font);
+					winText.setString("You Win!");
+					winText.setCharacterSize(48);
+					winText.setPosition(sf::Vector2f(300, 250)); // center text on screen
+					winText.setFillColor(sf::Color::White);
+					window.draw(winText); // draw win text
+                   
+
+                    window.display(); // win screen
+                    continue;         // skip 
+                }
+
                 for (int row = 0; row < numRows; row++) // move every level rectangle leftwards to simulate scrolling
                 {
                     for (int col = 0; col < numCols; col++)
@@ -211,6 +242,13 @@
                                 init(); // reset on hazard contact
                             }
                         }
+                        if (levelData[row][col] == 6) // yellow win cell
+                        {
+                            if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) // player touches win cell
+                            {
+                                gameWon = true; // set win flag
+                            }
+                        }
                     }
                 }
                 if (playerShape.getPosition().y > 600) // fell off bottom of screen
@@ -226,8 +264,7 @@
                     }
                 }
                 window.draw(playerShape); // draw player on top
-                window.display(); // present the rendered frame to the screen
-                timeSinceLastUpdate = sf::Time::Zero; // reset accumulator
+                window.display();         // present the rendered frame to the screen
             }
         }
     }
