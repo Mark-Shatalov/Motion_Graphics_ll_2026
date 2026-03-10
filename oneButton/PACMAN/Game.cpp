@@ -124,7 +124,7 @@
                     window.draw(winOverlay); // draw win overlay
 
                     sf::Font font;
-                    font.openFromFile("C:/Windows/Fonts/arial.ttf");
+                    font.openFromFile("C:/motion/Motion_Graphics_ll_2026/oneButton/PACMAN/ASSETS/FONTS/Jersey20-Regular.ttf");
                     sf::Text winText(font);
 					winText.setString("You Win!");
 					winText.setCharacterSize(48);
