@@ -110,7 +110,7 @@
                 {
                     for (int col = 0; col < numCols; col++)
                     {
-                        level[row][col].move(sf::Vector2f(-3.7, 0)); // scroll speed
+                        level[row][col].move(sf::Vector2f(-scrollSpeed, 0)); // scroll speed
                     }
                 }
                 // jump input: if space is pressed and we are not already moving vertically
@@ -130,6 +130,7 @@
                 velocityY = velocityY + gravity; // apply gravity to vertical velocity
                 playerShape.move(sf::Vector2f(0, velocityY)); // move player vertically
                 gravity = 0.6; // default gravity value
+                scrollSpeed = 3.7f; // reset scroll speed to base every frame before checking boosts
 
                 // collision detection between player and level cells
                 for (int row = 0; row < numRows; row++)
@@ -169,6 +170,26 @@
                                         playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // sit on pad surface
                                         onJumpPad = true; // flag that player is on a jump pad
                                         break;
+                                    }
+                                }
+                            }
+                            // landing on green speed boost block
+                            if (levelData[row][col] == 3)
+                            {
+                                if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
+                                {
+                                    if (playerShape.getPosition().y < level[row][col].getPosition().y) // player is above the block
+                                    {
+                                        gravity = 0;   // stop gravity while standing on block
+                                        velocityY = 0; // stop vertical movement
+                                        playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); // snap to block top
+                                        playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // sit on block surface
+                                        scrollSpeed = scrollSpeed * speedBuff; // increase scroll speed by 1.3x while standing on green block
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        init(); // hit from side/bottom -> reset
                                     }
                                 }
                             }
