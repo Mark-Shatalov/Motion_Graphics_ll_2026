@@ -21,7 +21,7 @@
 #include <iostream>
 #include <time.h>
 #include <SFML/Audio.hpp>
-
+#include "Particle.h"
 
 class Game
 {
@@ -48,6 +48,9 @@ public:
 
 	sf::SoundBuffer deathBuffer;
 	sf::Sound deathSound;
+
+	std::vector<Particle> particles;
+	float prevVelocityY = 0;
 
 	int levelData[numRows][numCols] =
 	{  // 1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45
@@ -77,4 +80,5 @@ public:
 	Game();
 	void init();
 	void run();
+	void spawnParticles();
 };

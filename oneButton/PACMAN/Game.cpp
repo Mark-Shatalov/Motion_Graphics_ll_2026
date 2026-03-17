@@ -44,7 +44,7 @@
         view = window.getDefaultView(); // reset view to default
         playerShape.setSize(sf::Vector2f(20, 20)); 
         playerShape.setPosition(sf::Vector2f(160, 500)); 
-
+        particles.clear(); // clear particles on reset
        
         for (int row = 0; row < numRows; row++) // iterate grid rows
         {
@@ -170,6 +170,8 @@
 					jumpSound.play(); // play jump sound effect
                 }
 
+                // store previos pos
+                prevVelocityY = velocityY;
                 velocityY = velocityY + gravity; // apply gravity to vertical velocity
                 playerShape.move(sf::Vector2f(0, velocityY)); // move player vertically
                 gravity = 0.6; // default gravity value
@@ -193,6 +195,12 @@
                                         velocityY = 0; // stop vertical movement
                                         playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); // align player top to platform top
                                         playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // move player up by its height
+
+                                        // spawn only when we are falling and collides with platforms
+                                        if (prevVelocityY > 0)
+                                        {
+                                            spawnParticles();
+                                        }
                                         break;
                                     }
                                     else {
@@ -213,6 +221,12 @@
                                         playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); // snap to pad top
                                         playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // sit on pad surface
                                         onJumpPad = true; // flag that player is on a jump pad
+
+                                        // spawn only when we are falling and collides with platforms
+                                        if (prevVelocityY > 0)
+                                        {
+                                            spawnParticles();
+                                        }
                                         break;
                                     }
                                 }
@@ -229,6 +243,13 @@
                                         playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); // snap to block top
                                         playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // sit on block surface
                                         scrollSpeed = scrollSpeed * speedBuff; // increase scroll speed by 1.3x while standing on green block
+
+                                        // spawn only when we are falling and collides with platforms
+                                        if (prevVelocityY > 0)
+
+                                        {
+                                            spawnParticles();
+                                        }
                                         break;
                                     }
                                     else
@@ -272,6 +293,25 @@
                     deathSound.play();
                     init(); // reset level
                 }
+
+                // update particles
+                for (auto& p : particles)
+                {
+                    p.vx *= 0.9f;
+                    p.vy += 0.3f;
+                    p.shape.move(sf::Vector2f(p.vx, p.vy));
+                    p.lifetime -= 1.0f / 60.0f;
+                }
+
+				// remove particles if time is finished
+                for (int i = particles.size() - 1; i >= 0; i--)
+                {
+                    if (particles[i].lifetime <= 0)
+                    {
+                        particles.erase(particles.begin() + i);
+                    }
+                }
+
                 window.clear();
                 for (int row = 0; row < numRows; row++) // draw every cell
                 {
@@ -280,12 +320,36 @@
                         window.draw(level[row][col]); // draw cell rectangle
                     }
                 }
+
+                // draw particles below player
+                for (auto& p : particles)
+                {
+                    window.draw(p.shape); 
+                }
+
                 window.draw(playerShape); // draw player on top
                 window.display();         // present the rendered frame to the screen
             }
         }
     }
 
+    void Game::spawnParticles()
+    {
+        // spawn landing particles
+        for (int i = 0; i < 8; i++)
+        {
+            Particle p;
+            p.shape.setSize(sf::Vector2f(4, 4));
+            p.shape.setFillColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
+            p.shape.setPosition(sf::Vector2f(playerShape.getPosition().x + 10, playerShape.getPosition().y + 20));
+            p.vx = (rand() % 7 - 3) * 1.0f;
+            p.vy = -(rand() % 4 + 1) * 1.0f;
+            p.lifetime = 1.0f;
+            particles.push_back(p);
+        }
+    }
+
+   
 
 int main()
 {
