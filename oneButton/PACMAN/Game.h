@@ -20,6 +20,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <time.h>
+#include <SFML/Audio.hpp>
+
 
 class Game
 {
@@ -40,6 +42,12 @@ public:
 
 	static const int numRows = 20; // screen rows (Y axis)
 	static const int numCols = 45; // screen columns (X axis)
+
+	sf::SoundBuffer jumpBuffer;
+	sf::Sound jumpSound;
+
+	sf::SoundBuffer deathBuffer;
+	sf::Sound deathSound;
 
 	int levelData[numRows][numCols] =
 	{  // 1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45

@@ -19,12 +19,22 @@
 #include <iostream>          // for console output
 #include <time.h>            // time functions
 #include "Game.h"           // include the Game class definition
-
+#include <SFML/Audio.hpp>
 
 
     Game::Game()
+        :jumpSound(jumpBuffer), deathSound(deathBuffer)
     {
 		randomNum = 0.0f;
+        if (!jumpBuffer.loadFromFile("ASSETS/AUDIO/jumpSound.wav"))
+        {
+            std::cout << "Error loading jump sound!" << std::endl;
+        }
+
+        if (!deathBuffer.loadFromFile("ASSETS/AUDIO/deathSound.wav"))
+        {
+            std::cout << "Error loading deathh sound!" << std::endl;
+        }
         window.create(sf::VideoMode({ 800, 600 }), "Endless Runner Game");
     }
 
@@ -35,6 +45,7 @@
         playerShape.setSize(sf::Vector2f(20, 20)); 
         playerShape.setPosition(sf::Vector2f(160, 500)); 
 
+       
         for (int row = 0; row < numRows; row++) // iterate grid rows
         {
             for (int col = 0; col < numCols; col++) // iterate grid columns
@@ -156,6 +167,7 @@
                     {
                         velocityY = -11.8f;
                     }
+					jumpSound.play(); // play jump sound effect
                 }
 
                 velocityY = velocityY + gravity; // apply gravity to vertical velocity
@@ -184,6 +196,7 @@
                                         break;
                                     }
                                     else {
+                                        deathSound.play();
                                         init(); // collided from side/bottom
                                     }
                                 }
@@ -220,6 +233,7 @@
                                     }
                                     else
                                     {
+                                        deathSound.play();
                                         init(); // hit from side/bottom -> reset
                                     }
                                 }
@@ -231,6 +245,7 @@
                             {
                                 if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) // head hit platform
                                 {
+                                    deathSound.play();
                                     init(); // reset level on head collision
                                 }
                             }
@@ -239,6 +254,7 @@
                         {
                             if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) // touching hazard
                             {
+                                deathSound.play();
                                 init(); // reset on hazard contact
                             }
                         }
@@ -253,6 +269,7 @@
                 }
                 if (playerShape.getPosition().y > 600) // fell off bottom of screen
                 {
+                    deathSound.play();
                     init(); // reset level
                 }
                 window.clear();
