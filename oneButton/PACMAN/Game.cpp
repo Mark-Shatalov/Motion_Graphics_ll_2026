@@ -44,7 +44,7 @@
         view = window.getDefaultView(); // reset view to default
         playerShape.setSize(sf::Vector2f(20, 20)); 
         playerShape.setPosition(sf::Vector2f(160, 500)); 
-        particles.clear(); // clear particles on reset
+        //particles.clear(); // clear particles on reset
        
         for (int row = 0; row < numRows; row++) // iterate grid rows
         {
@@ -220,6 +220,7 @@
                                     // collided from side/bottom
                                     else {
                                         deathSound.play();
+                                        spawnDeathParticles();
                                         init(); 
                                     }
                                 }
@@ -279,6 +280,7 @@
                                     else
                                     {
                                         deathSound.play();
+                                        spawnDeathParticles();
                                         init(); 
                                     }
                                 }
@@ -294,6 +296,7 @@
                                 if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) 
                                 {
                                     deathSound.play();
+                                    spawnDeathParticles();
                                     // reset level
                                     init(); 
                                 }
@@ -305,6 +308,7 @@
                             if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
                             {
                                 deathSound.play();
+                                spawnDeathParticles();
                                 // reset 
                                 init(); 
                             }
@@ -323,6 +327,7 @@
                 if (playerShape.getPosition().y > 600) 
                 {
                     deathSound.play();
+                    spawnDeathParticles();
                     // reset level
                     init(); 
                 }
@@ -332,8 +337,16 @@
                 {
                     p.vx *= 0.9f;
                     p.vy += 0.3f;
-                    p.shape.move(sf::Vector2f(p.vx, p.vy));
                     p.lifetime -= 1.0f / 60.0f;
+
+                    if (p.isCircle)
+                    {
+                        p.circleShape.move(sf::Vector2f(p.vx, p.vy));
+                    }
+                    else
+                    {
+                        p.shape.move(sf::Vector2f(p.vx, p.vy));
+                    }
                 }
 
 				// remove particles if time is finished
@@ -358,7 +371,14 @@
                 // draw particles below player
                 for (auto& p : particles)
                 {
-                    window.draw(p.shape); 
+                    if (p.isCircle)
+                    {
+                        window.draw(p.circleShape);
+                    }
+                    else
+                    {
+                        window.draw(p.shape);
+                    }
                 }
 
                 window.draw(playerShape); 
@@ -379,6 +399,29 @@
             p.vx = (rand() % 7 - 3) * 1.0f;
             p.vy = -(rand() % 4 + 1) * 1.0f;
             p.lifetime = 1.0f;
+            particles.push_back(p);
+        }
+    }
+
+    void Game::spawnDeathParticles()
+    {
+        sf::Color redColors[3] = {
+            sf::Color(255, 0, 0),      // red
+            sf::Color(139, 0, 0),      // dark red
+            sf::Color(255, 99, 99)     // light red
+        };
+
+        // spawn landing circle particles
+        for (int i = 0; i < 20; i++)
+        {
+            Particle p;
+            p.isCircle = true;
+            p.circleShape.setRadius(5.0f);
+            p.circleShape.setFillColor(redColors[rand() % 3]); 
+            p.circleShape.setPosition(sf::Vector2f(playerShape.getPosition().x + 10, playerShape.getPosition().y + 10));
+            p.vx = (rand() % 11 - 5) * 1.5f;
+            p.vy = (rand() % 11 - 5) * 1.5f;
+            p.lifetime = 1.2f;
             particles.push_back(p);
         }
     }

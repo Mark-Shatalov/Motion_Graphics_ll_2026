@@ -52,6 +52,8 @@ public:
 	sf::Sound deathSound;
 
 	std::vector<Particle> particles;
+	std::vector<Particle> deathParticles;
+
 	float prevVelocityY = 0;
 
 	int levelData[numRows][numCols] =
@@ -83,4 +85,5 @@ public:
 	void init();
 	void run();
 	void spawnParticles();
+	void spawnDeathParticles();
 };

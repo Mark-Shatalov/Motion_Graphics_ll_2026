@@ -25,6 +25,8 @@ class Particle
 {
 public:
     sf::RectangleShape shape;
+    sf::CircleShape circleShape;
+    bool isCircle = false;
     float vx, vy;
     float lifetime;
 };
