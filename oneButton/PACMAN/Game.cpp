@@ -2,17 +2,17 @@
 // Author :Mark Shatalov
 
 #ifdef _DEBUG 
-#pragma comment(lib,"sfml-graphics-d.lib") // link debug SFML graphics lib
-#pragma comment(lib,"sfml-audio-d.lib")    // link debug SFML audio lib
-#pragma comment(lib,"sfml-system-d.lib")   // link debug SFML system lib
-#pragma comment(lib,"sfml-window-d.lib")   // link debug SFML window lib
-#pragma comment(lib,"sfml-network-d.lib")  // link debug SFML network lib
+#pragma comment(lib,"sfml-graphics-d.lib") 
+#pragma comment(lib,"sfml-audio-d.lib")    
+#pragma comment(lib,"sfml-system-d.lib")   
+#pragma comment(lib,"sfml-window-d.lib")   
+#pragma comment(lib,"sfml-network-d.lib")  
 #else 
-#pragma comment(lib,"sfml-graphics.lib")   // link release SFML graphics lib
-#pragma comment(lib,"sfml-audio.lib")      // link release SFML audio lib
-#pragma comment(lib,"sfml-system.lib")     // link release SFML system lib
-#pragma comment(lib,"sfml-window.lib")     // link release SFML window lib
-#pragma comment(lib,"sfml-network.lib")    // link release SFML network lib
+#pragma comment(lib,"sfml-graphics.lib")   
+#pragma comment(lib,"sfml-audio.lib")      
+#pragma comment(lib,"sfml-system.lib")     
+#pragma comment(lib,"sfml-window.lib")     
+#pragma comment(lib,"sfml-network.lib")    
 #endif 
 
 #include <SFML/Graphics.hpp> // main SFML graphics header
@@ -45,6 +45,7 @@
         playerShape.setSize(sf::Vector2f(20, 20)); 
         playerShape.setPosition(sf::Vector2f(160, 500)); 
         //particles.clear(); // clear particles on reset
+        initLava();
        
         for (int row = 0; row < numRows; row++) // iterate grid rows
         {
@@ -82,12 +83,6 @@
                     level[row][col].setSize(sf::Vector2f(70, 30));
                     level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
                     level[row][col].setFillColor(sf::Color::White);
-                }
-                if (levelData[row][col] == 5) // lava cell
-                {
-                    level[row][col].setSize(sf::Vector2f(70, 30));
-                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
-                    level[row][col].setFillColor(sf::Color(255, 100, 0));
                 }
                 if (levelData[row][col] == 6) // win cell
                 {
@@ -160,6 +155,9 @@
                         level[row][col].move(sf::Vector2f(-scrollSpeed, 0));
                     }
                 }
+
+                updateLava();
+
                 // jump input if space is pressed and we are not already moving vertically
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Space) && velocityY == 0)
                 {
@@ -335,6 +333,7 @@
                 // update particles
                 for (auto& p : particles)
                 {
+                    // to do a gravity for particles 
                     p.vx *= 0.9f;
                     p.vy += 0.3f;
                     p.lifetime -= 1.0f / 60.0f;
@@ -380,6 +379,10 @@
                         window.draw(p.shape);
                     }
                 }
+                for (int i = 0; i < LAVA_COUNT; i++)
+                {
+                    window.draw(lavaShape[i]);
+                }
 
                 window.draw(playerShape); 
                 window.display();
@@ -419,10 +422,83 @@
             p.circleShape.setRadius(5.0f);
             p.circleShape.setFillColor(redColors[rand() % 3]); 
             p.circleShape.setPosition(sf::Vector2f(playerShape.getPosition().x + 10, playerShape.getPosition().y + 10));
-            p.vx = (rand() % 11 - 5) * 1.5f;
-            p.vy = (rand() % 11 - 5) * 1.5f;
+            p.vx = (rand() % 11 - 5) * 1.2f;
+            p.vy = (rand() % 11 - 5) * 1.2f;
             p.lifetime = 1.2f;
             particles.push_back(p);
+        }
+    }
+
+
+    // init lava
+    void Game::initLava()
+    {
+        // track current lava tile 
+        int idx = 0;
+        for (int row = 0; row < numRows && idx < LAVA_COUNT; row++)
+        {
+            for (int col = 0; col < numCols && idx < LAVA_COUNT; col++)
+            {
+                if (levelData[row][col] == 5)
+                {
+                    lavaX[idx] = col * 70.f;
+                    lavaY[idx] = row * 30.f;
+                    // set speed
+                    lavaVelX[idx] = 3.0f;
+
+                    lavaShape[idx].setSize(sf::Vector2f(70, 30));
+                    lavaShape[idx].setFillColor(sf::Color(255, 130, 0));
+                    lavaShape[idx].setPosition(sf::Vector2f(lavaX[idx], lavaY[idx]));
+
+                    idx++;
+                }
+            }
+        }
+    }
+
+    void Game::updateLava()
+    {
+        for (int i = 0; i < LAVA_COUNT; i++)
+        {
+            // scroll with the world
+            lavaX[i] -= scrollSpeed;
+
+            // apply bounce
+            // if positive moves rigth if negative - left
+            lavaX[i] += lavaVelX[i];
+
+            // update shape position
+            lavaShape[i].setPosition(sf::Vector2f(lavaX[i], lavaY[i]));
+
+            // check collision with red tiles
+            for (int row = 0; row < numRows; row++)
+            {
+                for (int col = 0; col < numCols; col++)
+                {
+                    if (levelData[row][col] != 1)
+                    {
+                        continue;
+                    }
+                    
+                    if (lavaShape[i].getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
+                    {
+                        // reverse direction and step back
+                        lavaVelX[i] = -lavaVelX[i];
+                        lavaX[i] += lavaVelX[i];
+                        lavaShape[i].setPosition(sf::Vector2f(lavaX[i], lavaY[i]));
+                        break;
+                    }
+                }
+            }
+
+            // check if player touches lava
+            if (playerShape.getGlobalBounds().findIntersection(lavaShape[i].getGlobalBounds()))
+            {
+                deathSound.play();
+                spawnDeathParticles();
+                init();
+                return;
+            }
         }
     }
 
