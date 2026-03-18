@@ -53,50 +53,50 @@
                 // set up rectangle for each cell depending on levelData value
                 if (levelData[row][col] == 1) // red blocks
                 {
-                    level[row][col].setSize(sf::Vector2f(70, 30)); // platform size
-                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30)); // col = X, row = Y
-                    level[row][col].setFillColor(sf::Color::Red); // solid platform color
+                    level[row][col].setSize(sf::Vector2f(70, 30)); 
+                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
+                    level[row][col].setFillColor(sf::Color::Red);
                 }
                 if (levelData[row][col] == 0) // empty cells
                 {
-                    level[row][col].setSize(sf::Vector2f(70, 30)); // empty cell size
-                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30)); // position
-                    level[row][col].setFillColor(sf::Color::Black); // background color for empty
+                    level[row][col].setSize(sf::Vector2f(70, 30)); 
+                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30)); 
+                    level[row][col].setFillColor(sf::Color::Black);
                 }
                 if (levelData[row][col] == 2) // blue hazard blocks
                 {
-                    level[row][col].setSize(sf::Vector2f(70, 30)); // hazard size
-                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30)); // position
-                    level[row][col].setFillColor(sf::Color::Blue); // hazard color
+                    level[row][col].setSize(sf::Vector2f(70, 30));
+                    level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
+                    level[row][col].setFillColor(sf::Color::Blue);
                 }
 				if (levelData[row][col] == 3) // green speed boost blocks
                 {
 					level[row][col].setSize(sf::Vector2f(70, 30));
 					level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
-					level[row][col].setFillColor(sf::Color::Green); // speed boost which increases scroll speed
-					level[row][col].setOutlineColor(sf::Color::Yellow); // add yellow outline
-					level[row][col].setOutlineThickness(-2); // make outline thicker for visibility
+					level[row][col].setFillColor(sf::Color::Green);
+					level[row][col].setOutlineColor(sf::Color::Yellow);
+					level[row][col].setOutlineThickness(-2);
                 }
 				if (levelData[row][col] == 4) // white jump boost blocks
                 {
                     level[row][col].setSize(sf::Vector2f(70, 30));
                     level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
-                    level[row][col].setFillColor(sf::Color::White);  // jumpad which gives extra jump height
+                    level[row][col].setFillColor(sf::Color::White);
                 }
-                if (levelData[row][col] == 5)
+                if (levelData[row][col] == 5) // lava cell
                 {
                     level[row][col].setSize(sf::Vector2f(70, 30));
                     level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
-                    level[row][col].setFillColor(sf::Color(255, 100, 0)); // create a lava cell 
+                    level[row][col].setFillColor(sf::Color(255, 100, 0));
                 }
-                if (levelData[row][col] == 6)
+                if (levelData[row][col] == 6) // win cell
                 {
                     level[row][col].setSize(sf::Vector2f(70, 30));
                     level[row][col].setPosition(sf::Vector2f(col * 70, row * 30));
-                    level[row][col].setFillColor(sf::Color::Yellow); // create a win cell 
+                    level[row][col].setFillColor(sf::Color::Yellow);
                 }
             }
-            std::cout << std::endl; // newline for console
+            std::cout << std::endl;
         }
     }
     void Game::run()
@@ -107,7 +107,7 @@
         clock.restart();
         while (window.isOpen())
         {
-            // check if the close window button is clicked on
+            // check if the close window button pressed
             while (const std::optional event = window.pollEvent())
             {
                 if (event->is<sf::Event::Closed>())
@@ -124,77 +124,91 @@
 
             if (timeSinceLastUpdate > timePerFrame)
             {
-                timeSinceLastUpdate = sf::Time::Zero; // reset accumulator
+                // reset
+                timeSinceLastUpdate = sf::Time::Zero;
 
-                if (gameWon) // if player has won, freeze game and show win screen only
+                // if player has won, freeze game and show win screen only
+                if (gameWon) 
                 {
-                    window.clear(sf::Color::Black); // clear screen to black
+                    // clear screen to black
+                    window.clear(sf::Color::Black);
 
                     sf::RectangleShape winOverlay(sf::Vector2f(800, 600));
                     winOverlay.setFillColor(sf::Color(0, 180, 0, 200));
-                    window.draw(winOverlay); // draw win overlay
+                    // draw win overlay
+                    window.draw(winOverlay);
 
                     sf::Font font;
                     font.openFromFile("C:/motion/Motion_Graphics_ll_2026/oneButton/PACMAN/ASSETS/FONTS/Jersey20-Regular.ttf");
                     sf::Text winText(font);
 					winText.setString("You Win!");
 					winText.setCharacterSize(48);
-					winText.setPosition(sf::Vector2f(300, 250)); // center text on screen
+					winText.setPosition(sf::Vector2f(300, 250));
 					winText.setFillColor(sf::Color::White);
-					window.draw(winText); // draw win text
+					window.draw(winText);
                    
-
-                    window.display(); // win screen
-                    continue;         // skip 
+                    // win screen
+                    window.display();
+                    continue;
                 }
 
-                for (int row = 0; row < numRows; row++) // move every level rectangle leftwards to simulate scrolling
+                // move every level rectangle leftwards to simulate scrolling
+                for (int row = 0; row < numRows; row++) 
                 {
                     for (int col = 0; col < numCols; col++)
                     {
-                        level[row][col].move(sf::Vector2f(-scrollSpeed, 0)); // scroll speed
+                        level[row][col].move(sf::Vector2f(-scrollSpeed, 0));
                     }
                 }
-                // jump input: if space is pressed and we are not already moving vertically
+                // jump input if space is pressed and we are not already moving vertically
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Space) && velocityY == 0)
                 {
-                    if (onJumpPad) // if player is standing on a white jump pad block
+                    // if player is standing on a white jump pad block
+                    if (onJumpPad) 
                     {
-                        velocityY = -18.0f; // boosted jump 
-                        onJumpPad = false;  // reset jump pad flag after jumping
+                        velocityY = -18.0f;
+                        onJumpPad = false;  
                     }
                     else
                     {
                         velocityY = -11.8f;
                     }
-					jumpSound.play(); // play jump sound effect
+                    // play jump sound effect
+					jumpSound.play(); 
                 }
 
                 // store previos pos
                 prevVelocityY = velocityY;
-                velocityY = velocityY + gravity; // apply gravity to vertical velocity
-                playerShape.move(sf::Vector2f(0, velocityY)); // move player vertically
-                gravity = 0.6; // default gravity value
-                scrollSpeed = 3.7f; // reset scroll speed to base every frame before checking boosts
+                // apply gravity to vertical velocity
+                velocityY = velocityY + gravity;
+                playerShape.move(sf::Vector2f(0, velocityY));
+                gravity = 0.6;
+                // reset scroll speed to base every frame before checking boosts
+                scrollSpeed = 3.7f;
 
                 // collision detection between player and level cells
                 for (int row = 0; row < numRows; row++)
                 {
                     for (int col = 0; col < numCols; col++)
                     {
-                        if (velocityY >= 0) // if player is falling or stationary vertically
+                        // if player is falling or stationary vertically
+                        if (velocityY >= 0) 
                         {
-                            if (levelData[row][col] == 1) // only collide with solid platforms
+                            // only collide with solid platforms
+                            if (levelData[row][col] == 1)
                             {
                                 // check if bounding boxes intersect
                                 if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
                                 {
-                                    if (playerShape.getPosition().y < level[row][col].getPosition().y) // if player is above the platform
+                                    // if player is above the platform
+                                    if (playerShape.getPosition().y < level[row][col].getPosition().y) 
                                     {
-                                        gravity = 0; // stop gravity
-                                        velocityY = 0; // stop vertical movement
-                                        playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); // align player top to platform top
-                                        playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // move player up by its height
+                                        gravity = 0;
+                                        velocityY = 0;
+                                        // align player top to platform top
+                                        playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y));
+                                        // move player up by its height
+                                        playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y));
 
                                         // spawn only when we are falling and collides with platforms
                                         if (prevVelocityY > 0)
@@ -203,9 +217,10 @@
                                         }
                                         break;
                                     }
+                                    // collided from side/bottom
                                     else {
                                         deathSound.play();
-                                        init(); // collided from side/bottom
+                                        init(); 
                                     }
                                 }
                             }
@@ -214,13 +229,17 @@
                             {
                                 if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
                                 {
-                                    if (playerShape.getPosition().y < level[row][col].getPosition().y) // player is above the pad
+                                    // player is above the pad
+                                    if (playerShape.getPosition().y < level[row][col].getPosition().y)
                                     {
-                                        gravity = 0; // stop gravity while standing on pad
-                                        velocityY = 0; // stop vertical movement, player stands on pad
-                                        playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); // snap to pad top
-                                        playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // sit on pad surface
-                                        onJumpPad = true; // flag that player is on a jump pad
+                                        gravity = 0;
+                                        velocityY = 0;
+                                        // snap to pad top
+                                        playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); 
+                                        // move player up by its height
+                                        playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y));
+
+                                        onJumpPad = true; 
 
                                         // spawn only when we are falling and collides with platforms
                                         if (prevVelocityY > 0)
@@ -236,13 +255,17 @@
                             {
                                 if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
                                 {
-                                    if (playerShape.getPosition().y < level[row][col].getPosition().y) // player is above the block
+                                    // player is above the block
+                                    if (playerShape.getPosition().y < level[row][col].getPosition().y)
                                     {
-                                        gravity = 0;   // stop gravity while standing on block
-                                        velocityY = 0; // stop vertical movement
-                                        playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y)); // snap to block top
-                                        playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y)); // sit on block surface
-                                        scrollSpeed = scrollSpeed * speedBuff; // increase scroll speed by 1.3x while standing on green block
+                                        gravity = 0;   
+                                        velocityY = 0;
+                                        // snap to block top
+                                        playerShape.setPosition(sf::Vector2f(playerShape.getPosition().x, level[row][col].getPosition().y));
+                                        // move player up by its height
+                                        playerShape.move(sf::Vector2f(0, -playerShape.getGlobalBounds().size.y));
+                                        // increase scroll speed while standing on green block
+                                        scrollSpeed = scrollSpeed * speedBuff;
 
                                         // spawn only when we are falling and collides with platforms
                                         if (prevVelocityY > 0)
@@ -252,46 +275,56 @@
                                         }
                                         break;
                                     }
+									// reset if we hit the block from the side or bottom
                                     else
                                     {
                                         deathSound.play();
-                                        init(); // hit from side/bottom -> reset
+                                        init(); 
                                     }
                                 }
                             }
                         }
-                        if (velocityY < 0) // if player is jump
+                        // if player is jump
+                        if (velocityY < 0) 
                         {
-                            if (levelData[row][col] == 1) // check against solids
+                            // check against solids
+                            if (levelData[row][col] == 1) 
                             {
-                                if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) // head hit platform
+                                // head hit platform
+                                if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) 
                                 {
                                     deathSound.play();
-                                    init(); // reset level on head collision
+                                    // reset level
+                                    init(); 
                                 }
                             }
                         }
-                        if (levelData[row][col] == 2) // hazard cells
+                        // hazard cells
+                        if (levelData[row][col] == 2) 
                         {
-                            if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) // touching hazard
+                            if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
                             {
                                 deathSound.play();
-                                init(); // reset on hazard contact
+                                // reset 
+                                init(); 
                             }
                         }
-                        if (levelData[row][col] == 6) // yellow win cell
+                        // yellow win cell
+                        if (levelData[row][col] == 6) 
                         {
-                            if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds())) // player touches win cell
+                            if (playerShape.getGlobalBounds().findIntersection(level[row][col].getGlobalBounds()))
                             {
-                                gameWon = true; // set win flag
+                                gameWon = true;
                             }
                         }
                     }
                 }
-                if (playerShape.getPosition().y > 600) // fell off bottom of screen
+                // fell off bottom of screen
+                if (playerShape.getPosition().y > 600) 
                 {
                     deathSound.play();
-                    init(); // reset level
+                    // reset level
+                    init(); 
                 }
 
                 // update particles
@@ -313,11 +346,12 @@
                 }
 
                 window.clear();
-                for (int row = 0; row < numRows; row++) // draw every cell
+                // draw every cell
+                for (int row = 0; row < numRows; row++) 
                 {
                     for (int col = 0; col < numCols; col++)
                     {
-                        window.draw(level[row][col]); // draw cell rectangle
+                        window.draw(level[row][col]);
                     }
                 }
 
@@ -327,8 +361,8 @@
                     window.draw(p.shape); 
                 }
 
-                window.draw(playerShape); // draw player on top
-                window.display();         // present the rendered frame to the screen
+                window.draw(playerShape); 
+                window.display();
             }
         }
     }
@@ -353,8 +387,8 @@
 
 int main()
 {
-    Game game; // construct game object
-    game.init(); // initialize level and player
-    game.run(); // enter main loop
-    return 0; // return success
+    Game game; 
+    game.init();
+    game.run(); 
+    return 0;
 }

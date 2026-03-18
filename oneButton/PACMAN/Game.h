@@ -33,8 +33,10 @@ public:
 	sf::RectangleShape playerShape;
 
 	float velocityX = 0, velocityY = 0, gravity = 0.3f;
-	float scrollSpeed = 3.7f;  // base scroll speed, increased by green speed boost blocks
-	float speedBuff = 2.0f; // multiplier for green speed boost blocks
+	// base scroll speed
+	float scrollSpeed = 3.7f;
+	// multiplier for green speed boost blocks
+	float speedBuff = 2.0f;
 	// set flag to check if the player is currently on a jump pad
 	bool onJumpPad = false; 
 	// set flag to check if the player has won the game
@@ -73,7 +75,7 @@ public:
 		{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // row 16
 		{ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // row 17
 		{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // row 18
-		{ 1, 1, 1, 3, 3, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0 }, // row 19 (floor)
+		{ 1, 1, 1, 3, 3, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0 }, // row 19
 	};
 	sf::RectangleShape level[numRows][numCols];
 
